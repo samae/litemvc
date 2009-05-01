@@ -5,6 +5,12 @@
 
 *Step 0:* Download latest version... -- [Downloading Downloadin]
 
+you'll need: 
+ * litemvc-0.1.#.jar
+ * libs/commons-beanutils-1.8,0.jar
+ * libs/commons-logging.jar 
+
+
 *Step 1:* Extend filter
 
 {{{
