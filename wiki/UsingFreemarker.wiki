@@ -35,8 +35,18 @@ public class MyFilter extends LiteMvcFilter {
 
 class TestHandler {
 
+    private String someProperty;
+
     public String get() {
         return "OK";
+    }
+
+    public String getSomeProperty() {
+        return someProperty;
+    }
+
+    public void setSomeProperty(String someProperty) {
+        this.someProperty = someProperty;
     }
 }
 
@@ -44,3 +54,54 @@ class TestHandler {
 
 
 feel free to use all the freemarker magic... you can access the handler bean ${handler} and all it's properties.
+
+== Writing Freemarker templates ==
+
+It's always nice when you can focus just on the content of the page and leave the headers, footers, navigation, ads and other stuff surrounding the content to the framework.
+
+
+=== test.ftl ===
+{{{
+<#assign pageTitle>Test Page</#assign>
+<#assign mainContent>
+  
+   <h1>Test Page</h1>
+
+   <div>
+       someProperty = ${handler.someProperty!''}
+   </div>
+
+</#assign>
+<#include "mainLayout.ftl"> 
+}}}
+
+=== mainLayout.ftl ===
+
+{{{
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html>
+<head>
+  <title>
+    <#if pageTitle??>${pageTitle}<#else>Default Title</#if>
+  </title>
+  <link rel="stylesheet" type="text/css" href="/css/main.css" />
+</head>
+<body>
+  <div id="header">
+    <a href="/">My Website</a>
+  </div>
+  <div class="mainContent">
+    <#if mainContent??>
+      ${mainContent}
+    <#else>
+      Default Content... not interesting...
+    </#if>
+  </div>
+  <div id="footer">
+    &copy; 2009 Me
+  </div>
+</body>
+</html>
+}}}
+
+mainLayout.ftl is totally reusable for other pages. Enjoy!
