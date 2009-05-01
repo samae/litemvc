@@ -37,7 +37,7 @@ import org.apache.commons.beanutils.BeanUtils;
 
 public abstract class LiteMvcFilter implements Filter {
 	
-	private static Map<Pattern, Binding> bindingsMap = new HashMap<Pattern, Binding>();
+	private static Map<Pattern, Binding<?>> bindingsMap = new HashMap<Pattern, Binding<?>>();
 	
 	private static Map<String, Action> globalResults = new HashMap<String, Action>();
 	
@@ -52,7 +52,7 @@ public abstract class LiteMvcFilter implements Filter {
 		RequestHelper.setHttpServletResponse(response);
 		
 		try {
-			Binding binding = null;
+			Binding<?> binding = null;
 			Matcher matcher = null;
 			String servletPath = request.getServletPath();
 			for (Pattern p : bindingsMap.keySet()) {
@@ -112,7 +112,7 @@ public abstract class LiteMvcFilter implements Filter {
 					}
 				}
 				
-				String result = (String) method.invoke(handler, args.toArray());
+				Object result = (Object) method.invoke(handler, args.toArray());
 				
 				Action action = binding.getAction(result);
 				
@@ -173,11 +173,9 @@ public abstract class LiteMvcFilter implements Filter {
 		}
 	}
 	
-	protected final Binding map(String regex, Class<?> handler) {
-		Binding binding = new Binding(regex, handler);
-		
+	protected final <T> Binding<T> map(String regex, Class<? extends Handler<T>> handler) {
+		Binding<T> binding = new Binding<T>(regex, handler);
 		bindingsMap.put(binding.getPattern(), binding);
-		
 		return binding;
 	}
 	
@@ -200,7 +198,7 @@ public abstract class LiteMvcFilter implements Filter {
 	
 	public abstract void configure();
 	
-	public boolean customActionProcessor(Binding binding, HttpServletRequest request, HttpServletResponse response, Action action) {
+	public boolean customActionProcessor(Binding<?> binding, HttpServletRequest request, HttpServletResponse response, Action action) {
 		return false;
 	}
 }
