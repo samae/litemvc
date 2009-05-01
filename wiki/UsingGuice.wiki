@@ -1,4 +1,4 @@
-#summary How to use Guice as object factory
+#summary HOWTO use Guice as object factory
 #labels Featured
 
 Download Guice -- http://code.google.com/p/google-guice
