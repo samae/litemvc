@@ -37,7 +37,7 @@ public class MyFilter extends LiteMvcFilter {
     }
 }
 
-class TestHandler {
+class TestHandler implements Handler<String> {
 
     private String someProperty;
 
