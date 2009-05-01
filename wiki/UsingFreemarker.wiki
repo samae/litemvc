@@ -15,6 +15,7 @@ public class MyFilter extends LiteMvcFilter {
         map("/test", TestHandler.class).templateResult("OK", "test.ftl");
     }
 
+    @Override
     public void processTemplate(HttpServletRequest request,
             HttpServletResponse response, String templateName, Object handler) {
 
