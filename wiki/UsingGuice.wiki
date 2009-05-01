@@ -1,0 +1,31 @@
+#summary How to use Guice as object factory
+
+(download Guice)
+
+{{{
+public class MyFilter extends LiteMvcFilter {
+
+   private static Injector injector = Guice.createInjector(new MyModule());
+	
+   @Override
+   public void configure() {
+      map("/test", TestHandler.class)
+         .dispatchResult("OK", "/test.jsp");
+   }
+	
+   @Override
+   public Object createObject(Class<?> clazz) throws Exception {
+      Object instance = injector.getInstance(clazz);
+   }
+}
+
+class TestHandler {
+
+   // inject stuff if you want
+	
+   public String get() {
+      return "OK";
+   }
+}
+
+}}}
