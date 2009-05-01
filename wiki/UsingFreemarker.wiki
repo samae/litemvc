@@ -94,7 +94,7 @@ It's always nice when you can focus just on the content of the page and leave th
   <div id="header">
     <a href="/">My Website</a>
   </div>
-  <div class="mainContent">
+  <div id="mainContent">
     <#if mainContent??>
       ${mainContent}
     <#else>
