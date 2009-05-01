@@ -1,0 +1,100 @@
+#summary Getting Started
+
+= Getting Started =
+
+*Step 0:* Download latest version... -- [Downloading Downloadin]
+
+*Step 1:* Extend filter
+
+{{{
+
+   package org.example;
+
+   // imports...
+
+   public class MyFilter extends LiteMvcFilter {
+
+      @Override
+      public void configure() {
+         map("/test", TestHandler.class)
+            .dispatchResult("OK", "/test.jsp");
+      }
+   }
+
+}}}
+
+*Step 2:* Write JSP
+
+{{{
+   package org.example;
+
+   // just a simple Java bean...
+   public class TestHandler {
+
+      private String someProperty;     
+ 
+      // method that will handle GET requests
+      public String get() {
+         // do something with someProperty
+         // return template name that will take care of rendering response
+         return "OK";
+      }
+ 
+      // method that will handle POST requests
+      public void post(HttpServletResponse response) {
+         // do something with someProperty
+         // here, for example, we don't want to use templates... note void as method's return type.
+         // we'll write to response ourselves... note additional method args.
+         response.setContentType("text/html");
+         response.getWriter().write("<h1>Hello World! (Post)</h1>");
+      }
+
+      public String getSomeProperty() {
+         return someProperty;
+      }
+
+      public void setSomeProperty(String someProperty) {
+         this.someProperty = someProperty;
+      }
+   }
+
+}}}
+
+*Step 3:* Write template
+
+{{{
+
+   // test.jsp
+   <h1>Hello World!</h1>
+   <%
+      org.example.TestHandler handler = (org.example.TestHandler) request.getAttribute("handler");
+   %>
+   someProperty=<%= handler.getSomeProperty() %>
+
+}}}
+
+
+*Step 4:* Add filter to web.xml
+
+{{{
+
+  <filter>
+    <filter-name>MyLiteMvcFilter</filter-name>
+    <filter-class>org.example.MyFilter</filter-class>
+  </filter>
+ 
+  <filter-mapping>
+    <filter-name>MyLiteMvcFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+}}}
+
+*Step 5:* browse away... http://localhost:8080/test?someProperty=test%20value
+
+you should see:
+= Hello World! =
+someProperty=test value
+
+if you do form POST to http://localhost:8080/test, you'll see:
+= Hello World! (Post) =
