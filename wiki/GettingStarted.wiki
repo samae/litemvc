@@ -1,4 +1,4 @@
-#summary Getting Started
+#summary Getting Started Tutorial
 #labels Featured
 
 = Getting Started =
