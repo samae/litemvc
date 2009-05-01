@@ -130,6 +130,7 @@ public abstract class LiteMvcFilter implements Filter {
 				}
 				
 				if (action instanceof DispatcherAction) {
+					request.setAttribute("handler", handler);
 					request.getRequestDispatcher(((DispatcherAction) action).getLocation()).forward(request, response);
 					return true;
 				}
