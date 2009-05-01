@@ -1,4 +1,5 @@
 #summary How to use Guice as object factory
+#labels Featured
 
 (download Guice)
 
@@ -21,7 +22,7 @@ public class MyFilter extends LiteMvcFilter {
 
 class TestHandler {
 
-   // inject stuff if you want
+   // now you can inject stuff or attach interceptors
 	
    public String get() {
       return "OK";
