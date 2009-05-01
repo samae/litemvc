@@ -22,7 +22,7 @@ public class MyFilter extends LiteMvcFilter {
    }
 }
 
-class TestHandler {
+class TestHandler implements Handler<String> {
 
    // now you can inject stuff or attach interceptors
 	
