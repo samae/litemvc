@@ -1,4 +1,4 @@
-#summary using FreeMarker as templating engine
+#summary HOWTO use FreeMarker as templating engine
 #labels Featured
 
 Download !FreeMarker -- http://freemarker.org
