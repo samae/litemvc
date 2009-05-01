@@ -1,5 +1,9 @@
 #summary Howto use Velocity as the templating engine
 
+Download Velocity -- http://velocity.apache.org
+
+Here's how you make it work:
+
 {{{
 public class MyFilter extends LiteMvcFilter {
 
