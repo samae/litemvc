@@ -30,7 +30,7 @@ you'll need:
 
 }}}
 
-*Step 2:* Write JSP
+*Step 2:* Write Handler
 
 {{{
    package org.example;
@@ -67,7 +67,7 @@ you'll need:
 
 }}}
 
-*Step 3:* Write template
+*Step 3:* Write JSP
 
 {{{
 
