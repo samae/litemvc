@@ -48,7 +48,7 @@ you'll need:
       }
  
       // method that will handle POST requests
-      public void post(HttpServletResponse response) {
+      public void post(HttpServletResponse response) throws Exception {
          // do something with someProperty
          // here, for example, we don't want to use templates... note void as method's return type.
          // we'll write to response ourselves... note additional method args.
