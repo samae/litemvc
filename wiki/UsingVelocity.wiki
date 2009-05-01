@@ -1,4 +1,4 @@
-#summary Howto use Velocity as the templating engine
+#summary HOWTO use Velocity as the templating engine
 
 Download Velocity -- http://velocity.apache.org
 
