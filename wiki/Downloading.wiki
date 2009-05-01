@@ -1,4 +1,5 @@
 #summary Downloading latest version
+#labels Featured
 
- # follow [http://code.google.com/p/litemvc/source/checkout Checkout] instructions to get the source.
- # run ant dist to build the latest jar file.
+ # follow [http://code.google.com/p/litemvc/source/checkout Checkout] instructions to get the source
+ # run ant dist to build the latest jar file
