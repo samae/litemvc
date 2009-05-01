@@ -1,0 +1,44 @@
+#summary using freemarker as templating engine
+
+{{{
+public class MyFilter extends LiteMvcFilter {
+
+    private static Configuration cfg = new Configuration();
+
+    static {
+        cfg.setClassForTemplateLoading(Templates.class, "templates");
+    }
+
+    @Override
+    public void configure() {
+        map("/test", TestHandler.class).templateResult("OK", "test.ftl");
+    }
+
+    public void processTemplate(HttpServletRequest request,
+            HttpServletResponse response, String templateName, Object handler) {
+
+        try {
+            Template temp = cfg.getTemplate(templateName);
+            Map<String, Object> rootMap = new HashMap<String, Object>();
+            rootMap.put("request", request);
+            rootMap.put("response", response);
+            rootMap.put("handler", handler);
+            temp.process(rootMap, response.getWriter());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+}
+
+class TestHandler {
+
+    public String get() {
+        return "OK";
+    }
+}
+
+}}}
+
+
+feel free to use all the freemarker magic... you can access the handler bean ${handler} and all it's properties.
