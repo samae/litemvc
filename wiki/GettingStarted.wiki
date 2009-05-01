@@ -3,7 +3,7 @@
 
 = Getting Started =
 
-*Step 0:* Download latest version... -- [Downloading Downloadin]
+*Step 0:* Download latest version... -- [Downloading Downloading]
 
 you'll need: 
  * litemvc-0.1.#.jar
