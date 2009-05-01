@@ -1,5 +1,9 @@
-#summary using freemarker as templating engine
+#summary using FreeMarker as templating engine
 #labels Featured
+
+Download !FreeMarker -- http://freemarker.org
+
+Here's how you make it work:
 
 {{{
 public class MyFilter extends LiteMvcFilter {
@@ -53,9 +57,9 @@ class TestHandler {
 }}}
 
 
-feel free to use all the freemarker magic... you can access the handler bean ${handler} and all it's properties.
+feel free to use all the !FreeMarker magic... you can access the handler bean ${handler} and all it's properties.
 
-== Writing Freemarker templates ==
+== Writing !FreeMarker templates ==
 
 It's always nice when you can focus just on the content of the page and leave the headers, footers, navigation, ads and other stuff surrounding the content to the framework.
 
