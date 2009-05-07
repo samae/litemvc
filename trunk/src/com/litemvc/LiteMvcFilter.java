@@ -114,6 +114,10 @@ public abstract class LiteMvcFilter implements Filter {
 				
 				Object result = (Object) method.invoke(handler, args.toArray());
 				
+				if (result == null) {
+					return true;
+				}
+				
 				Action action = binding.getAction(result);
 				
 				if (action == null) {
