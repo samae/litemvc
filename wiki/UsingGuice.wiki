@@ -18,7 +18,7 @@ public class MyFilter extends LiteMvcFilter {
 	
    @Override
    public Object createObject(Class<?> clazz) throws Exception {
-      Object instance = injector.getInstance(clazz);
+      return injector.getInstance(clazz);
    }
 }
 
