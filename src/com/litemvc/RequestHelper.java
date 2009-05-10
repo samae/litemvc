@@ -21,39 +21,39 @@ import javax.servlet.http.HttpServletResponse;
 
 public class RequestHelper {
 
-	private RequestHelper() {}
-	
-	private static ThreadLocal<HttpServletRequest> threadLocalRequest = new ThreadLocal<HttpServletRequest>();
-	private static ThreadLocal<HttpServletResponse> threadLocalResponse = new ThreadLocal<HttpServletResponse>();
-	
-	static void setHttpServletRequest(HttpServletRequest req) {
-		threadLocalRequest.set(req);
-	}
-	
-	public static HttpServletRequest getHttpServletRequest() {
-		HttpServletRequest req = threadLocalRequest.get();
-		if (req == null) {
-			throw new RuntimeException("request is not initialized");
-		}
-		
-		return req;
-	}
-	
-	static void setHttpServletResponse(HttpServletResponse resp) {
-		threadLocalResponse.set(resp);
-	}
-	
-	public static HttpServletResponse getHttpServletResponse() {
-		HttpServletResponse resp = threadLocalResponse.get();
-		if (resp == null) {
-			throw new RuntimeException("response is not initialized");
-		}
-		
-		return resp;
-	}
-	
-	static void clean() {
-		threadLocalRequest.set(null);
-		threadLocalResponse.set(null);
-	}
+    private RequestHelper() {}
+    
+    private static ThreadLocal<HttpServletRequest> threadLocalRequest = new ThreadLocal<HttpServletRequest>();
+    private static ThreadLocal<HttpServletResponse> threadLocalResponse = new ThreadLocal<HttpServletResponse>();
+    
+    static void setHttpServletRequest(HttpServletRequest req) {
+        threadLocalRequest.set(req);
+    }
+    
+    public static HttpServletRequest getHttpServletRequest() {
+        HttpServletRequest req = threadLocalRequest.get();
+        if (req == null) {
+            throw new RuntimeException("request is not initialized");
+        }
+        
+        return req;
+    }
+    
+    static void setHttpServletResponse(HttpServletResponse resp) {
+        threadLocalResponse.set(resp);
+    }
+    
+    public static HttpServletResponse getHttpServletResponse() {
+        HttpServletResponse resp = threadLocalResponse.get();
+        if (resp == null) {
+            throw new RuntimeException("response is not initialized");
+        }
+        
+        return resp;
+    }
+    
+    static void clean() {
+        threadLocalRequest.set(null);
+        threadLocalResponse.set(null);
+    }
 }

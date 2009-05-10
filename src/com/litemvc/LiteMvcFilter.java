@@ -34,175 +34,189 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.jexl.JexlContext;
+import org.apache.commons.jexl.JexlHelper;
 
 public abstract class LiteMvcFilter implements Filter {
-	
-	private static Map<Pattern, Binding<?>> bindingsMap = new HashMap<Pattern, Binding<?>>();
-	
-	private static Map<String, Action> globalResults = new HashMap<String, Action>();
-	
-	@Override
-	public void doFilter(ServletRequest req, ServletResponse resp,
-			FilterChain chain) throws IOException, ServletException {
+    
+    private static Map<Pattern, Binding<?>> bindingsMap = new HashMap<Pattern, Binding<?>>();
+    
+    private static Map<String, Action> globalResults = new HashMap<String, Action>();
+    
+    @Override
+    public void doFilter(ServletRequest req, ServletResponse resp,
+            FilterChain chain) throws IOException, ServletException {
 
-		HttpServletRequest request = (HttpServletRequest) req;
-		HttpServletResponse response = (HttpServletResponse) resp;
-		
-		RequestHelper.setHttpServletRequest(request);
-		RequestHelper.setHttpServletResponse(response);
-		
-		try {
-			Binding<?> binding = null;
-			Matcher matcher = null;
-			String servletPath = request.getServletPath();
-			for (Pattern p : bindingsMap.keySet()) {
-				matcher = p.matcher(servletPath);
-				if (matcher.matches()) {
-					binding = bindingsMap.get(p);
-					break;
-				}
-			}
+        HttpServletRequest request = (HttpServletRequest) req;
+        HttpServletResponse response = (HttpServletResponse) resp;
+        
+        RequestHelper.setHttpServletRequest(request);
+        RequestHelper.setHttpServletResponse(response);
+        
+        try {
+            Binding<?> binding = null;
+            Matcher matcher = null;
+            String servletPath = request.getServletPath();
+            for (Pattern p : bindingsMap.keySet()) {
+                matcher = p.matcher(servletPath);
+                if (matcher.matches()) {
+                    binding = bindingsMap.get(p);
+                    break;
+                }
+            }
 
-			if (binding != null) {
-				Object handler = createObject(binding.getHandlerClass());
-				
-				if (tryToExecuteMethod(request, response, matcher, binding, handler)) {
-					return;
-				}
-			}
-		} catch (final Exception e) {
-			throw new RuntimeException(e.getMessage(), e);
-		} finally {
-			RequestHelper.clean();
-		}
-		chain.doFilter(req, resp);
-	}
+            if (binding != null) {
+                Object handler = createObject(binding.getHandlerClass());
+                
+                if (tryToExecuteMethod(request, response, matcher, binding, handler)) {
+                    return;
+                }
+            }
+        } catch (final Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        } finally {
+            RequestHelper.clean();
+        }
+        chain.doFilter(req, resp);
+    }
 
-	@SuppressWarnings("unchecked")
-	private boolean tryToExecuteMethod(HttpServletRequest request,
-			HttpServletResponse response, Matcher matcher,
-			Binding binding, Object handler)
-			throws Exception {
-		
-		Method[] methods = binding.getHandlerClass().getMethods();
-		for (Method method : methods) {
-			if (method.getName().equals(request.getMethod().toLowerCase())) {
-				Class<?>[] parmTypes = method.getParameterTypes();
-				
-				int matchCount = 1;
-				ArrayList<Object> args = new ArrayList<Object>();
-				for (Class<?> clazz : parmTypes) {
-					if (clazz.equals(HttpServletRequest.class)) {
-						args.add(request);
-					}
-					if (clazz.equals(HttpServletResponse.class)) {
-						args.add(response);
-					}
-					if (clazz.equals(String.class)) {
-						args.add(matcher.group(matchCount));
-						matchCount++;
-					}
-				}
-				Map handlerDescr = BeanUtils.describe(handler);
-				
-				for (Object oParmName : request.getParameterMap().keySet()) {
-					String parmName = (String) oParmName;
-					if (handlerDescr.containsKey(parmName)) {
-						BeanUtils.setProperty(handler, parmName, request.getParameter(parmName));
-					}
-				}
-				
-				Object result = (Object) method.invoke(handler, args.toArray());
-				
-				if (result == null) {
-					return true;
-				}
-				
-				Action action = binding.getAction(result);
-				
-				if (action == null) {
-					action = globalResults.get(result);
-				}
-				
-				if (action == null) {
-					throw new UnmappedResultException(result);
-				}
-				
-				if (action instanceof TemplateAction) {
-					processTemplate(request, response, ((TemplateAction) action).getTemplateName(), handler);
-					return true;
-				}
-				
-				if (action instanceof DispatcherAction) {
-					request.setAttribute("handler", handler);
-					request.getRequestDispatcher(((DispatcherAction) action).getLocation()).forward(request, response);
-					return true;
-				}
-				
-				if (action instanceof RedirectAction) {
-					response.sendRedirect(((RedirectAction) action).getLocation());
-					return true;
-				}
-				
-				if (!customActionProcessor(binding, request, response, action)) {
-					throw new RuntimeException("unkown action type: " + action.getClass().getName());
-				}
-				return true;
-			}
-		}
-		
-		return false;
-	}
-	
-	@Override
-	public void init(FilterConfig arg0) throws ServletException { 
-		configure();
-	}
-	
-	@Override
-	public void destroy() { }
+    @SuppressWarnings("unchecked")
+    private boolean tryToExecuteMethod(HttpServletRequest request,
+            HttpServletResponse response, Matcher matcher,
+            Binding binding, Object handler)
+            throws Exception {
+        
+        Method[] methods = binding.getHandlerClass().getMethods();
+        for (Method method : methods) {
+            if (method.getName().equals(request.getMethod().toLowerCase())) {
+                Class<?>[] parmTypes = method.getParameterTypes();
+                
+                int matchCount = 1;
+                ArrayList<Object> args = new ArrayList<Object>();
+                for (Class<?> clazz : parmTypes) {
+                    if (clazz.equals(HttpServletRequest.class)) {
+                        args.add(request);
+                    }
+                    if (clazz.equals(HttpServletResponse.class)) {
+                        args.add(response);
+                    }
+                    if (clazz.equals(String.class)) {
+                        args.add(matcher.group(matchCount));
+                        matchCount++;
+                    }
+                }
+                Map handlerDescr = BeanUtils.describe(handler);
+                
+                for (Object oParmName : request.getParameterMap().keySet()) {
+                    String parmName = (String) oParmName;
+                    if (handlerDescr.containsKey(parmName)) {
+                        BeanUtils.setProperty(handler, parmName, request.getParameter(parmName));
+                    }
+                }
+                
+                Object result = (Object) method.invoke(handler, args.toArray());
+                
+                if (result == null) {
+                    return true;
+                }
+                
+                Action action = binding.getAction(result);
+                
+                if (action == null) {
+                    action = globalResults.get(result);
+                }
+                
+                if (action == null) {
+                    throw new UnmappedResultException(result);
+                }
+                
+                if (action instanceof TemplateAction) {
+                    processTemplate(request, response, ((TemplateAction) action).getTemplateName(), handler);
+                    return true;
+                }
+                
+                if (action instanceof DispatcherAction) {
+                    request.setAttribute("handler", handler);
+                    request.getRequestDispatcher(((DispatcherAction) action).getLocation()).forward(request, response);
+                    return true;
+                }
+                
+                if (action instanceof RedirectAction) {
+                    RedirectAction redirectAction = (RedirectAction) action;
+                    String location = redirectAction.getLocation();
+                    if (redirectAction.isEvaluate()) { 
+                        Map<String, Object> context = new HashMap<String, Object>();
+                        context.put("handler", handler);
+                        JexlContext jc = JexlHelper.createContext();
+                        jc.getVars().put("handler", handler);
 
-	
-	public Object createObject(Class<?> clazz) throws Exception {
-		return clazz.newInstance();
-	}
-	
-	public void processTemplate(HttpServletRequest request,
-			HttpServletResponse response, String templateName, Object handler) {
+                        System.out.println("----------- expr: " + redirectAction.getLocation());
+                        location = "" + redirectAction.getExpression().evaluate(jc);
+                        System.out.println("----------- eval: " + location);
+                    }
+                    response.sendRedirect(location);
+                    return true;
+                }
+                
+                if (!customActionProcessor(binding, request, response, action)) {
+                    throw new RuntimeException("unkown action type: " + action.getClass().getName());
+                }
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    @Override
+    public void init(FilterConfig arg0) throws ServletException { 
+        configure();
+    }
+    
+    @Override
+    public void destroy() { }
 
-		try {
-			request.getRequestDispatcher(templateName).include(request, response);
-		} catch (Exception e) {
-			throw new RuntimeException(e.getMessage(), e);
-		}
-	}
-	
-	protected final <T> Binding<T> map(String regex, Class<? extends Handler<T>> handler) {
-		Binding<T> binding = new Binding<T>(regex, handler);
-		bindingsMap.put(binding.getPattern(), binding);
-		return binding;
-	}
-	
-	
-	public void globalTemplateResult(String result, String templateName) {
-		globalResults.put(result, new TemplateAction(templateName));
-	}
-	
-	public void globalDispatchResult(String result, String location) {
-		globalResults.put(result, new DispatcherAction(location));
-	}
-	
-	public void globalRedirectResult(String result, String location) {
-		globalResults.put(result, new RedirectAction(location));
-	}
-	
-	public void globalResult(String result, Action action) {
-		globalResults.put(result, action);
-	}
-	
-	public abstract void configure();
-	
-	public boolean customActionProcessor(Binding<?> binding, HttpServletRequest request, HttpServletResponse response, Action action) {
-		return false;
-	}
+    
+    public Object createObject(Class<?> clazz) throws Exception {
+        return clazz.newInstance();
+    }
+    
+    public void processTemplate(HttpServletRequest request,
+            HttpServletResponse response, String templateName, Object handler) {
+
+        try {
+            request.getRequestDispatcher(templateName).include(request, response);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+    
+    protected final <T> Binding<T> map(String regex, Class<? extends Handler<T>> handler) {
+        Binding<T> binding = new Binding<T>(regex, handler);
+        bindingsMap.put(binding.getPattern(), binding);
+        return binding;
+    }
+    
+    
+    public void globalTemplateResult(String result, String templateName) {
+        globalResults.put(result, new TemplateAction(templateName));
+    }
+    
+    public void globalDispatchResult(String result, String location) {
+        globalResults.put(result, new DispatcherAction(location));
+    }
+    
+    public void globalRedirectResult(String result, String location) {
+        globalResults.put(result, new RedirectAction(location));
+    }
+    
+    public void globalResult(String result, Action action) {
+        globalResults.put(result, action);
+    }
+    
+    public abstract void configure();
+    
+    public boolean customActionProcessor(Binding<?> binding, HttpServletRequest request, HttpServletResponse response, Action action) {
+        return false;
+    }
 }

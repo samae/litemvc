@@ -22,15 +22,15 @@ import java.io.StringWriter;
 @SuppressWarnings("serial")
 public class PrintableException extends Throwable {
 
-	public PrintableException(Throwable t) {
-		super(t);
-	}
-	
-	public String getStringStacktrace() {
-		StringWriter sw = new StringWriter();
-		PrintWriter pw = new PrintWriter(sw);
-		this.printStackTrace(pw);
-		
-		return sw.toString();
-	}
+    public PrintableException(Throwable t) {
+        super(t);
+    }
+    
+    public String getStringStacktrace() {
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        this.printStackTrace(pw);
+        
+        return sw.toString();
+    }
 }
