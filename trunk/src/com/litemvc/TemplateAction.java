@@ -18,13 +18,13 @@ package com.litemvc;
 
 public class TemplateAction implements Action {
 
-	private String templateName;
-	
-	public TemplateAction(String templateName) {
-		this.templateName = templateName;
-	}
-	
-	public String getTemplateName() {
-		return templateName;
-	}
+    private String templateName;
+    
+    public TemplateAction(String templateName) {
+        this.templateName = templateName;
+    }
+    
+    public String getTemplateName() {
+        return templateName;
+    }
 }

@@ -16,15 +16,42 @@
 
 package com.litemvc;
 
+import org.apache.commons.jexl.Expression;
+import org.apache.commons.jexl.ExpressionFactory;
+
 public class RedirectAction implements Action {
 
-	private String location;
-	
-	public RedirectAction(String location) {
-		this.location = location;
-	}
-	
-	public String getLocation() {
-		return location;
-	}
+    private String location;
+    private boolean evaluate;
+    private Expression expression;
+    
+    public RedirectAction(String location) {
+        this(location, false);
+    }
+    
+    public RedirectAction(String location, boolean evaluate) {
+        this.location = location;
+        this.evaluate = evaluate;
+        
+        if (evaluate) {
+            try {
+                expression = ExpressionFactory.createExpression( location );
+
+            } catch (Exception e) {
+                throw new RuntimeException(e.getMessage());
+            }
+        }
+    }
+    
+    public boolean isEvaluate() {
+        return evaluate;
+    }
+    
+    public Expression getExpression() {
+        return expression;
+    }
+    
+    public String getLocation() {
+        return location;
+    }
 }

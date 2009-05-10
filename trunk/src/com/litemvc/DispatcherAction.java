@@ -18,13 +18,13 @@ package com.litemvc;
 
 public class DispatcherAction implements Action {
 
-	private String location;
-	
-	public DispatcherAction(String location) {
-		this.location = location;
-	}
-	
-	public String getLocation() {
-		return location;
-	}
+    private String location;
+    
+    public DispatcherAction(String location) {
+        this.location = location;
+    }
+    
+    public String getLocation() {
+        return location;
+    }
 }
