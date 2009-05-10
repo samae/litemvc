@@ -150,9 +150,7 @@ public abstract class LiteMvcFilter implements Filter {
                         JexlContext jc = JexlHelper.createContext();
                         jc.getVars().put("handler", handler);
 
-                        System.out.println("----------- expr: " + redirectAction.getLocation());
                         location = "" + redirectAction.getExpression().evaluate(jc);
-                        System.out.println("----------- eval: " + location);
                     }
                     response.sendRedirect(location);
                     return true;
