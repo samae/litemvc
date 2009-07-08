@@ -19,7 +19,7 @@ package com.litemvc;
 @SuppressWarnings("serial")
 public class UnmappedResultException extends Exception {
 
-    public UnmappedResultException(Object result) {
-        super("unmapped result: " + result);
+    public UnmappedResultException(String result, boolean isError) {
+        super("unmapped" + (isError ? " global" : "") + " result: " + result);
     }
 }

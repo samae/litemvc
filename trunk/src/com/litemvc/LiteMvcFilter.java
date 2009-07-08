@@ -39,9 +39,11 @@ import org.apache.commons.jexl.JexlHelper;
 
 public abstract class LiteMvcFilter implements Filter {
     
-    private static Map<Pattern, Binding<?>> bindingsMap = new HashMap<Pattern, Binding<?>>();
+    private static Map<Pattern, Binding> bindingsMap = new HashMap<Pattern, Binding>();
     
     private static Map<String, Action> globalResults = new HashMap<String, Action>();
+
+    private static Map<Class<? extends Exception>, String> exceptionsMap = new HashMap<Class<? extends Exception>, String>();
     
     @Override
     public void doFilter(ServletRequest req, ServletResponse resp,
@@ -52,9 +54,9 @@ public abstract class LiteMvcFilter implements Filter {
         
         RequestHelper.setHttpServletRequest(request);
         RequestHelper.setHttpServletResponse(response);
-        
+
         try {
-            Binding<?> binding = null;
+            Binding binding = null;
             Matcher matcher = null;
             String servletPath = request.getServletPath();
             for (Pattern p : bindingsMap.keySet()) {
@@ -114,20 +116,35 @@ public abstract class LiteMvcFilter implements Filter {
                     }
                 }
                 
-                Object result = (Object) method.invoke(handler, args.toArray());
+                boolean isError = false;
+                String result = null; 
+                try {
+                    result = (String) method.invoke(handler, args.toArray());
+                } catch (Exception e) {
+                    if (exceptionsMap.containsKey(e.getClass())) {
+                        result = exceptionsMap.get(e.getClass());
+                        isError = true;
+                    } else {
+                        throw e;
+                    }
+                }
                 
                 if (result == null) {
                     return true;
                 }
                 
-                Action action = binding.getAction(result);
+                Action action = null; 
+                
+                if (!isError) { // we only check global results in case of an error.
+                    action = binding.getAction(result);
+                }
                 
                 if (action == null) {
                     action = globalResults.get(result);
                 }
                 
                 if (action == null) {
-                    throw new UnmappedResultException(result);
+                    throw new UnmappedResultException(result, isError);
                 }
                 
                 if (action instanceof TemplateAction) {
@@ -189,32 +206,35 @@ public abstract class LiteMvcFilter implements Filter {
         }
     }
     
-    protected final <T> Binding<T> map(String regex, Class<? extends Handler<T>> handler) {
-        Binding<T> binding = new Binding<T>(regex, handler);
+    protected final Binding map(String regex, Class<?> handler) {
+        Binding binding = new Binding(regex, handler);
         bindingsMap.put(binding.getPattern(), binding);
         return binding;
     }
     
-    
-    public void globalTemplateResult(String result, String templateName) {
+    protected void mapException(Class<? extends Exception> ex, String globalResult) {
+        exceptionsMap.put(ex, globalResult);
+    }
+
+    protected void globalTemplateResult(String result, String templateName) {
         globalResults.put(result, new TemplateAction(templateName));
     }
     
-    public void globalDispatchResult(String result, String location) {
+    protected void globalDispatchResult(String result, String location) {
         globalResults.put(result, new DispatcherAction(location));
     }
     
-    public void globalRedirectResult(String result, String location) {
+    protected void globalRedirectResult(String result, String location) {
         globalResults.put(result, new RedirectAction(location));
     }
     
-    public void globalResult(String result, Action action) {
+    protected void globalResult(String result, Action action) {
         globalResults.put(result, action);
     }
     
-    public abstract void configure();
+    protected abstract void configure();
     
-    public boolean customActionProcessor(Binding<?> binding, HttpServletRequest request, HttpServletResponse response, Action action) {
+    public boolean customActionProcessor(Binding binding, HttpServletRequest request, HttpServletResponse response, Action action) {
         return false;
     }
 }
