@@ -20,12 +20,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-public class Binding<T> {
+public class Binding {
 
     private Class<?> handlerClass;
     private Pattern pattern;
     
-    private Map<T, Action> result2action = new HashMap<T, Action>();
+    private Map<String, Action> result2action = new HashMap<String, Action>();
     
     Binding(String regex, Class<?> handlerClass) {
         this.pattern = Pattern.compile(regex);
@@ -40,31 +40,31 @@ public class Binding<T> {
         return pattern;
     }
     
-    public Binding<T> templateResult(T result, String templateName) {
+    public Binding templateResult(String result, String templateName) {
         result2action.put(result, new TemplateAction(templateName));
         return this;
     }
     
-    public Binding<T> dispatchResult(T result, String location) {
+    public Binding dispatchResult(String result, String location) {
         result2action.put(result, new DispatcherAction(location));
         return this;
     }
     
-    public Binding<T> redirectResult(T result, String location) {
+    public Binding redirectResult(String result, String location) {
         return redirectResult(result, location, false);
     }
     
-    public Binding<T> redirectResult(T result, String location, boolean evaluate) {
+    public Binding redirectResult(String result, String location, boolean evaluate) {
         result2action.put(result, new RedirectAction(location, evaluate));
         return this;
     }
     
-    public Binding<T> customResult(T result, Action action) {
+    public Binding customResult(String result, Action action) {
         result2action.put(result, action);
         return this;
     }
     
-    public Action getAction(T result) {
+    public Action getAction(String result) {
         return result2action.get(result);
     }
 }
