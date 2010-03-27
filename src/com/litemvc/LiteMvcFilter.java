@@ -17,9 +17,11 @@
 package com.litemvc;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -43,7 +45,7 @@ public abstract class LiteMvcFilter implements Filter {
     
     private static Map<String, Action> globalResults = new HashMap<String, Action>();
 
-    private static Map<Class<? extends Exception>, String> exceptionsMap = new HashMap<Class<? extends Exception>, String>();
+    private static Map<Class<? extends Exception>, String> exceptionsMap = new LinkedHashMap<Class<? extends Exception>, String>();
     
     @Override
     public void doFilter(ServletRequest req, ServletResponse resp,
@@ -121,8 +123,15 @@ public abstract class LiteMvcFilter implements Filter {
                 try {
                     result = (String) method.invoke(handler, args.toArray());
                 } catch (Exception e) {
-                    if (exceptionsMap.containsKey(e.getClass())) {
-                        result = exceptionsMap.get(e.getClass());
+                	Throwable cause = e;
+                	
+                	if (e instanceof InvocationTargetException) {
+                		InvocationTargetException ite = (InvocationTargetException) e;
+                		cause = ite.getCause();
+                	}
+                	
+                    if (exceptionsMap.containsKey(cause.getClass())) {
+                        result = exceptionsMap.get(cause.getClass());
                         isError = true;
                     } else {
                         throw e;
