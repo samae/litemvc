@@ -28,7 +28,7 @@
 	<target name="compile" depends="init-classpath">
 		<delete dir="${basedir}/target/classes"/>
 		<mkdir dir="${basedir}/target/classes"/>
-		<javac classpathref="compile-path" destdir="${basedir}/target/classes" srcdir="${basedir}/src"/>
+		<javac classpathref="compile-path" destdir="${basedir}/target/classes" srcdir="${basedir}/src" target="1.5"/>
 	</target>
 
 	<target name="dist" depends="compile">
