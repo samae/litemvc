@@ -1,5 +1,8 @@
 #summary Downloading latest version
-#labels Featured
+
+ # download the latest ZIP file from http://code.google.com/p/litemvc/downloads/list
+
+or
 
  # follow [http://code.google.com/p/litemvc/source/checkout Checkout] instructions to get the source
  # run ant dist to build the latest jar file
