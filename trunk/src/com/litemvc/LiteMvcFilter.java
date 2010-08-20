@@ -36,6 +36,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.jexl.JexlContext;
 import org.apache.commons.jexl.JexlHelper;
 
@@ -45,9 +46,9 @@ public abstract class LiteMvcFilter implements Filter {
     
     private static Map<String, Action> globalResults = new HashMap<String, Action>();
 
-    private static Map<Class<? extends Exception>, String> exceptionsMap = new LinkedHashMap<Class<? extends Exception>, String>();
+    private static Map<Class<? extends Throwable>, String> exceptionsMap = 
+    	new LinkedHashMap<Class<? extends Throwable>, String>();
     
-    @Override
     public void doFilter(ServletRequest req, ServletResponse resp,
             FilterChain chain) throws IOException, ServletException {
 
@@ -109,12 +110,12 @@ public abstract class LiteMvcFilter implements Filter {
                         matchCount++;
                     }
                 }
-                Map handlerDescr = BeanUtils.describe(handler);
                 
                 for (Object oParmName : request.getParameterMap().keySet()) {
                     String parmName = (String) oParmName;
-                    if (handlerDescr.containsKey(parmName)) {
-                        BeanUtils.setProperty(handler, parmName, request.getParameter(parmName));
+                    if (PropertyUtils.isWriteable(handler, parmName)) {
+                    	BeanUtils.setProperty(handler, parmName, 
+                    			request.getParameter(parmName));
                     }
                 }
                 
@@ -157,13 +158,15 @@ public abstract class LiteMvcFilter implements Filter {
                 }
                 
                 if (action instanceof TemplateAction) {
-                    processTemplate(request, response, ((TemplateAction) action).getTemplateName(), handler);
+                    processTemplate(request, response, 
+                    		((TemplateAction) action).getTemplateName(), handler);
                     return true;
                 }
                 
                 if (action instanceof DispatcherAction) {
                     request.setAttribute("handler", handler);
-                    request.getRequestDispatcher(((DispatcherAction) action).getLocation()).forward(request, response);
+                    request.getRequestDispatcher(
+                    		((DispatcherAction) action).getLocation()).forward(request, response);
                     return true;
                 }
                 
@@ -171,8 +174,6 @@ public abstract class LiteMvcFilter implements Filter {
                     RedirectAction redirectAction = (RedirectAction) action;
                     String location = redirectAction.getLocation();
                     if (redirectAction.isEvaluate()) { 
-                        Map<String, Object> context = new HashMap<String, Object>();
-                        context.put("handler", handler);
                         JexlContext jc = JexlHelper.createContext();
                         jc.getVars().put("handler", handler);
 
@@ -183,7 +184,8 @@ public abstract class LiteMvcFilter implements Filter {
                 }
                 
                 if (!customActionProcessor(binding, request, response, action)) {
-                    throw new RuntimeException("unkown action type: " + action.getClass().getName());
+                    throw new RuntimeException("unkown action type: " + 
+                    		action.getClass().getName());
                 }
                 return true;
             }
@@ -192,12 +194,10 @@ public abstract class LiteMvcFilter implements Filter {
         return false;
     }
     
-    @Override
     public void init(FilterConfig arg0) throws ServletException { 
         configure();
     }
     
-    @Override
     public void destroy() { }
 
     
@@ -221,7 +221,7 @@ public abstract class LiteMvcFilter implements Filter {
         return binding;
     }
     
-    protected void mapException(Class<? extends Exception> ex, String globalResult) {
+    protected void mapException(Class<? extends Throwable> ex, String globalResult) {
         exceptionsMap.put(ex, globalResult);
     }
 
@@ -243,7 +243,8 @@ public abstract class LiteMvcFilter implements Filter {
     
     protected abstract void configure();
     
-    public boolean customActionProcessor(Binding binding, HttpServletRequest request, HttpServletResponse response, Action action) {
+    public boolean customActionProcessor(Binding binding, HttpServletRequest request, 
+    		HttpServletResponse response, Action action) {
         return false;
     }
 }
