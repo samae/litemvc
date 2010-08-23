@@ -8,4 +8,4 @@
 
 = 0.1 =
 
-First [stable] release.
+First (stable) release.
