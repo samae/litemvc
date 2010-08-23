@@ -1,0 +1,11 @@
+#summary LiteMVC Release Notes
+
+= 0.1.1 =
+
+ * Fixed issue #2
+ * Fixed exception handling
+ * Minor code cleanup.
+
+= 0.1 =
+
+First [stable] release.
