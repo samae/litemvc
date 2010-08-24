@@ -31,8 +31,25 @@
 		<javac classpathref="compile-path" destdir="${basedir}/target/classes" srcdir="${basedir}/src" target="1.5"/>
 	</target>
 
-	<target name="dist" depends="compile">
+	<target name="clean">
+		<delete dir="${basedir}/target"/>
+	</target>
+	
+	<target name="dist" depends="clean, compile, dist-src">
 		<jar destfile="litemvc-${version}.jar" basedir="${basedir}/target/classes"/>
+	</target>
+
+	<target name="dist-src" depends="compile">
+		<mkdir dir="${basedir}/target/classes-src"/>
+		<copy todir="${basedir}/target/classes-src">
+			<fileset dir="${basedir}/src">
+				<exclude name="**/.svn"/>
+			</fileset>
+			<fileset dir="${basedir}/target/classes">
+				<exclude name="**/.svn"/>
+			</fileset>
+		</copy>
+		<jar destfile="litemvc-src-${version}.jar" basedir="${basedir}/target/classes-src"/>
 	</target>
 	
 	<target name="archive" depends="dist">
