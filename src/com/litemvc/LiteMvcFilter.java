@@ -93,7 +93,7 @@ public abstract class LiteMvcFilter implements Filter {
         
         Method[] methods = binding.getHandlerClass().getMethods();
         for (Method method : methods) {
-            if (method.getName().equals(request.getMethod().toLowerCase())) {
+            if (isMappedMethod(request, method, binding)) {
                 Class<?>[] parmTypes = method.getParameterTypes();
                 
                 int matchCount = 1;
@@ -193,6 +193,14 @@ public abstract class LiteMvcFilter implements Filter {
         
         return false;
     }
+
+	private boolean isMappedMethod(HttpServletRequest request, Method method, Binding binding) {
+		if (binding.getMethodName() == null) {
+			return method.getName().equals(request.getMethod().toLowerCase());
+		} else {
+			return method.getName().equals(binding.getMethodName());
+		}
+	}
     
     public void init(FilterConfig arg0) throws ServletException { 
         configure();
@@ -215,10 +223,36 @@ public abstract class LiteMvcFilter implements Filter {
         }
     }
     
+    /**
+     * Map a regex to a handler class. Will execute method on the handler object
+     * that matches the HTTP reqeust method. Ex.
+     *  if HTTP GET:   handlerObj.get(...)
+     *  if HTTP POST:  handlerObj.post(...)
+     *  etc.
+     * 
+     * @param regex
+     * @param handler
+     * @return the binding object builder
+     */
     protected final Binding map(String regex, Class<?> handler) {
         Binding binding = new Binding(regex, handler);
         bindingsMap.put(binding.getPattern(), binding);
         return binding;
+    }
+    
+    /**
+     * Map a regex to a handler class and methodName. Will execute methodName on 
+     * the handler object. Ex.
+     *  if HTTP *:   handlerObj.methodName(...)
+     * 
+     * @param regex
+     * @param handler
+     * @return the binding object builder
+     */
+    protected final Binding map(String regex, Class<?> handler, String methodName) {
+    	Binding binding = new Binding(regex, handler, methodName);
+    	bindingsMap.put(binding.getPattern(), binding);
+    	return binding;
     }
     
     protected void mapException(Class<? extends Throwable> ex, String globalResult) {
