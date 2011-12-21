@@ -47,7 +47,7 @@ public abstract class LiteMvcFilter implements Filter {
     private static Map<String, Action> globalResults = new HashMap<String, Action>();
 
     private static Map<Class<? extends Throwable>, String> exceptionsMap = 
-    	new LinkedHashMap<Class<? extends Throwable>, String>();
+        new LinkedHashMap<Class<? extends Throwable>, String>();
     
     public void doFilter(ServletRequest req, ServletResponse resp,
             FilterChain chain) throws IOException, ServletException {
@@ -114,8 +114,8 @@ public abstract class LiteMvcFilter implements Filter {
                 for (Object oParmName : request.getParameterMap().keySet()) {
                     String parmName = (String) oParmName;
                     if (PropertyUtils.isWriteable(handler, parmName)) {
-                    	BeanUtils.setProperty(handler, parmName, 
-                    			request.getParameter(parmName));
+                        BeanUtils.setProperty(handler, parmName, 
+                                request.getParameter(parmName));
                     }
                 }
                 
@@ -124,13 +124,13 @@ public abstract class LiteMvcFilter implements Filter {
                 try {
                     result = (String) method.invoke(handler, args.toArray());
                 } catch (Exception e) {
-                	Throwable cause = e;
-                	
-                	if (e instanceof InvocationTargetException) {
-                		InvocationTargetException ite = (InvocationTargetException) e;
-                		cause = ite.getCause();
-                	}
-                	
+                    Throwable cause = e;
+                    
+                    if (e instanceof InvocationTargetException) {
+                        InvocationTargetException ite = (InvocationTargetException) e;
+                        cause = ite.getCause();
+                    }
+                    
                     if (exceptionsMap.containsKey(cause.getClass())) {
                         result = exceptionsMap.get(cause.getClass());
                         isError = true;
@@ -159,14 +159,14 @@ public abstract class LiteMvcFilter implements Filter {
                 
                 if (action instanceof TemplateAction) {
                     processTemplate(request, response, 
-                    		((TemplateAction) action).getTemplateName(), handler);
+                            ((TemplateAction) action).getTemplateName(), handler);
                     return true;
                 }
                 
                 if (action instanceof DispatcherAction) {
                     request.setAttribute("handler", handler);
                     request.getRequestDispatcher(
-                    		((DispatcherAction) action).getLocation()).forward(request, response);
+                            ((DispatcherAction) action).getLocation()).forward(request, response);
                     return true;
                 }
                 
@@ -185,7 +185,7 @@ public abstract class LiteMvcFilter implements Filter {
                 
                 if (!customActionProcessor(binding, request, response, action)) {
                     throw new RuntimeException("unkown action type: " + 
-                    		action.getClass().getName());
+                            action.getClass().getName());
                 }
                 return true;
             }
@@ -194,13 +194,13 @@ public abstract class LiteMvcFilter implements Filter {
         return false;
     }
 
-	private boolean isMappedMethod(HttpServletRequest request, Method method, Binding binding) {
-		if (binding.getMethodName() == null) {
-			return method.getName().equals(request.getMethod().toLowerCase());
-		} else {
-			return method.getName().equals(binding.getMethodName());
-		}
-	}
+    private boolean isMappedMethod(HttpServletRequest request, Method method, Binding binding) {
+        if (binding.getMethodName() == null) {
+            return method.getName().equals(request.getMethod().toLowerCase());
+        } else {
+            return method.getName().equals(binding.getMethodName());
+        }
+    }
     
     public void init(FilterConfig arg0) throws ServletException { 
         configure();
@@ -250,9 +250,9 @@ public abstract class LiteMvcFilter implements Filter {
      * @return the binding object builder
      */
     protected final Binding map(String regex, Class<?> handler, String methodName) {
-    	Binding binding = new Binding(regex, handler, methodName);
-    	bindingsMap.put(binding.getPattern(), binding);
-    	return binding;
+        Binding binding = new Binding(regex, handler, methodName);
+        bindingsMap.put(binding.getPattern(), binding);
+        return binding;
     }
     
     protected void mapException(Class<? extends Throwable> ex, String globalResult) {
@@ -278,7 +278,7 @@ public abstract class LiteMvcFilter implements Filter {
     protected abstract void configure();
     
     public boolean customActionProcessor(Binding binding, HttpServletRequest request, 
-    		HttpServletResponse response, Action action) {
+            HttpServletResponse response, Action action) {
         return false;
     }
 }

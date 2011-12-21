@@ -34,9 +34,9 @@ public class Binding {
     }
     
     Binding(String regex, Class<?> handlerClass, String methodName) {
-		this.pattern = Pattern.compile(regex);
-    	this.handlerClass = handlerClass;
-    	this.methodName = methodName;
+        this.pattern = Pattern.compile(regex);
+        this.handlerClass = handlerClass;
+        this.methodName = methodName;
     }
     
     public Class<?> getHandlerClass() {
@@ -48,8 +48,8 @@ public class Binding {
     }
     
     public String getMethodName() {
-		return methodName;
-	}
+        return methodName;
+    }
     
     public Binding templateResult(String result, String templateName) {
         result2action.put(result, new TemplateAction(templateName));
