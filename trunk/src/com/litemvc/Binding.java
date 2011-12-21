@@ -24,12 +24,19 @@ public class Binding {
 
     private Class<?> handlerClass;
     private Pattern pattern;
+    private String methodName;
     
     private Map<String, Action> result2action = new HashMap<String, Action>();
     
     Binding(String regex, Class<?> handlerClass) {
         this.pattern = Pattern.compile(regex);
         this.handlerClass = handlerClass;
+    }
+    
+    Binding(String regex, Class<?> handlerClass, String methodName) {
+		this.pattern = Pattern.compile(regex);
+    	this.handlerClass = handlerClass;
+    	this.methodName = methodName;
     }
     
     public Class<?> getHandlerClass() {
@@ -39,6 +46,10 @@ public class Binding {
     public Pattern getPattern() {
         return pattern;
     }
+    
+    public String getMethodName() {
+		return methodName;
+	}
     
     public Binding templateResult(String result, String templateName) {
         result2action.put(result, new TemplateAction(templateName));
