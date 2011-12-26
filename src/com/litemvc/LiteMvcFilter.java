@@ -158,15 +158,23 @@ public abstract class LiteMvcFilter implements Filter {
                 }
                 
                 if (action instanceof TemplateAction) {
-                    processTemplate(request, response, 
-                            ((TemplateAction) action).getTemplateName(), handler);
+                	TemplateAction templateAction = (TemplateAction) action;
+                	String templateName = templateAction.getTemplateName();
+                    if (templateAction.isEvaluate()) { 
+                        JexlContext jc = JexlHelper.createContext();
+                        jc.getVars().put("handler", handler);
+
+                        templateName = "" + templateAction.getExpression().evaluate(jc);
+                    }
+
+					processTemplate(request, response, templateName, handler);
                     return true;
                 }
                 
                 if (action instanceof DispatcherAction) {
                     request.setAttribute("handler", handler);
-                    request.getRequestDispatcher(
-                            ((DispatcherAction) action).getLocation()).forward(request, response);
+                    DispatcherAction location = (DispatcherAction) action;
+					request.getRequestDispatcher(location.getLocation()).forward(request, response);
                     return true;
                 }
                 

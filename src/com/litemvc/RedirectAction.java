@@ -35,8 +35,7 @@ public class RedirectAction implements Action {
         
         if (evaluate) {
             try {
-                expression = ExpressionFactory.createExpression( location );
-
+                expression = ExpressionFactory.createExpression(location);
             } catch (Exception e) {
                 throw new RuntimeException(e.getMessage());
             }
