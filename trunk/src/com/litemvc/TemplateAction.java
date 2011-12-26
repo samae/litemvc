@@ -16,15 +16,40 @@
 
 package com.litemvc;
 
+import org.apache.commons.jexl.Expression;
+import org.apache.commons.jexl.ExpressionFactory;
+
 public class TemplateAction implements Action {
 
     private String templateName;
+    private boolean evaluate;
+	private Expression expression;
     
     public TemplateAction(String templateName) {
         this.templateName = templateName;
     }
     
+    public TemplateAction(String templateName, boolean evaluate) {
+    	this.templateName = templateName;
+		this.evaluate = evaluate;
+		if (evaluate) {
+            try {
+                expression = ExpressionFactory.createExpression(templateName);
+            } catch (Exception e) {
+                throw new RuntimeException(e.getMessage());
+            }
+		}
+    }
+    
     public String getTemplateName() {
         return templateName;
     }
+    
+    public boolean isEvaluate() {
+		return evaluate;
+	}
+    
+    public Expression getExpression() {
+		return expression;
+	}
 }

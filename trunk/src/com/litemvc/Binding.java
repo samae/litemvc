@@ -56,6 +56,11 @@ public class Binding {
         return this;
     }
     
+    public Binding templateResult(String result, String templateName, boolean evaluate) {
+    	result2action.put(result, new TemplateAction(templateName));
+    	return this;
+    }
+    
     public Binding dispatchResult(String result, String location) {
         result2action.put(result, new DispatcherAction(location));
         return this;
