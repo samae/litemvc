@@ -57,7 +57,7 @@ public class Binding {
     }
     
     public Binding templateResult(String result, String templateName, boolean evaluate) {
-    	result2action.put(result, new TemplateAction(templateName));
+    	result2action.put(result, new TemplateAction(templateName, evaluate));
     	return this;
     }
     
