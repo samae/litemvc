@@ -41,13 +41,7 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletResponse;
 
-import com.litemvc.Handler;
-
-/**
- * A Java bean with a marker interface indicating the type of the
- * result returned by its methods
- */
-public class TestHandler implements Handler<TestHandler.Result> {
+public class TestHandler {
 
    private String someProperty;
 
