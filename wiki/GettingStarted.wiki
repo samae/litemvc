@@ -26,7 +26,7 @@ public class MyFilter extends LiteMvcFilter {
    @Override
    public void configure() {
       map("/test", TestHandler.class)
-         .dispatchResult(Result.OK, "/test.jsp");
+         .dispatchResult("OK", "/test.jsp");
    }
 }
 
@@ -49,8 +49,6 @@ import com.litemvc.Handler;
  */
 public class TestHandler implements Handler<TestHandler.Result> {
 
-   public enum Result { OK }
-	
    private String someProperty;
 
    /**
@@ -58,8 +56,8 @@ public class TestHandler implements Handler<TestHandler.Result> {
     * 
     * @return OK if everything runs smooth
     */
-   public Result get() {
-      return Result.OK;
+   public String get() {
+      return "OK";
    }
 
    /**
